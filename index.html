@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nodejs</title>
+    <script crossorigin="anonymous" src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        #result {
+            width: 200px;
+            height: 200px;
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <button id="sendBtn">点我发送请求</button>
+    <button id="calBtn">点我取消请求</button>
+    <div id="result"></div>
+
+    <script>
+        let btn = document.getElementById("sendBtn");
+        let res = document.getElementById("result");
+        let calBtn = document.getElementById("calBtn");
+        let xhr = null;
+        calBtn.onclick = function(){
+            xhr.abort();
+        };
+        btn.onclick = function(){
+            // xhr = new XMLHttpRequest();
+            // xhr.timeout = 2000;
+            // xhr.ontimeout = function(){
+            //     res.innerHTML = '网络异常，请稍后重试！';
+            // };
+            // xhr.onerror = function(){
+            //     res.innerHTML = '你的网络似乎出了一些问题..';
+            // };
+            // xhr.open('GET','http://127.0.0.1:8000/serve');
+            // xhr.send();
+            // xhr.onreadystatechange = function(){
+            //     if(xhr.readyState === 4){
+            //         if(xhr.status < 300 && xhr.status >= 200){
+            //             res.innerHTML = xhr.response;
+            //         }
+            //     }
+            // };
+            $.ajax({
+                url: 'http://127.0.0.1:8000/serve',
+                data: {a:100, b:200},
+                type: 'GET',
+                dataType: 'json',
+                success: function(data){
+                    res.innerHTML = data;
+                    console.log(data);
+                },
+                timeout : 2000,
+                error: function(){
+                    res.innerHTML = '出错啦！';
+                }
+            });
+        }
+        res.onmouseover = function(){
+            const xhr1 = new XMLHttpRequest();
+            xhr1.open('POST','http://127.0.0.1:8000/serve');
+            xhr1.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+            
+            xhr1.send('a=100&b=200&c=300');
+            xhr1.onreadystatechange = function(){
+                if(xhr1.readyState === 4){
+                    if(xhr1.status < 300 && xhr1.status >= 200){
+                        res.innerHTML = xhr1.response;
+                    }
+                }
+            };
+        };
+        window.onkeydown = function(){
+            const jsonxhr = new XMLHttpRequest();
+            jsonxhr.responseType = 'json';
+            jsonxhr.open('GET','http://127.0.0.1:8000/json-server');
+            jsonxhr.send();
+            jsonxhr.onreadystatechange = function(){
+                if(jsonxhr.readyState === 4){
+                    if(jsonxhr.status < 300 && jsonxhr.status >= 200){
+                        //let data = JSON.parse(jsonxhr.response);
+                        //console.log(data);
+                        console.log(jsonxhr.response);
+                        res.innerHTML = jsonxhr.response.name;
+                    }
+                }
+            }
+        };
+    </script>
+</body>
+</html>
